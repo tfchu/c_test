@@ -78,7 +78,7 @@ void case04(){
 	printf("%d\n", sizeof(struct A));
 
 	// declaration
-	struct A *a;		// *a is also ok
+	struct A a;		// *a is also ok
 	// if using struct A a, output = 8, 12
 	// 		sizeof(&a): address is 8 bytes for 64-bit system
 	//		sizeof(a): a is of type struct A, size is same as struct A = 12 bytes
