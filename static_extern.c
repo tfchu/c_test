@@ -27,9 +27,9 @@ int i1;             // tentative defintion, refers to previous
 static int i2;      // tentative defintion, refers to previous
 int i3 = 3;         // tentative defintion, refers to previous
 
-extern int i1;
-extern int i2;
-extern int i3;
+extern int i1;      // refers to previous, whose linkage is external
+extern int i2;      // refers to previous, whose linkage is inernal
+extern int i3;      // refers to previous, whose linkage is external
 
 int main(void){
     printf("%d\n", i1);
