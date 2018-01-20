@@ -31,10 +31,11 @@ extern int i1;      // refers to previous, whose linkage is external
 extern int i2;      // refers to previous, whose linkage is inernal
 extern int i3;      // refers to previous, whose linkage is external
 
-int main(void){
+int j = 10;
+
+int static_extern_test(void){
     printf("%d\n", i1);
     printf("%d\n", i2);
     printf("%d\n", i3);
-    printf("%s\n", "done");
     return 0;
 }
