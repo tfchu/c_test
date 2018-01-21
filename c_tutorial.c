@@ -13,7 +13,7 @@ void preprocessor_test(){
 
 void data_type_long_test(){
     long int i;
-    printf("size is %d", sizeof(i));
+    printf("size is %lu", sizeof(i));
 }
 
 /*
@@ -136,9 +136,9 @@ void sizeof_test(){
 	char *ptr;
 	char str[] = "Hello World";
 	ptr = str;
-	printf("%d\n", sizeof(ptr));    // 8 (bytes) (8 bytes for 64-bit system)
-    printf("%d\n", sizeof(str));    // 12 (bytes) (str is 11 char + "\0", so 12 characters = 12 bytes)
-    printf("%d\n", strlen(str));    // 11 (chars), str is 11 characters withtout "\0"
+	printf("%lu\n", sizeof(ptr));    // 8 (bytes) (8 bytes for 64-bit system)
+    printf("%lu\n", sizeof(str));    // 12 (bytes) (str is 11 char + "\0", so 12 characters = 12 bytes)
+    printf("%lu\n", strlen(str));    // 11 (chars), str is 11 characters withtout "\0"
 }
 
 /*
@@ -151,14 +151,14 @@ struct A{
 struct B;	// forward declaration (no definition)
 
 void sizeof_struct_test1(){
-	printf("%d\n", sizeof(struct A));   // 12 (3 int, 4 bytes each)
+	printf("%lu\n", sizeof(struct A));   // 12 (3 int, 4 bytes each)
 
 	// declaration
 	struct A a;		// *a is also ok
     a.x = 3; a.y = 4; a.z = 5;
 	// &a has the same value as &a.x, but unable to use &a to get values. &a is not a pointer
-	printf("%d\n", sizeof(&a));     // 8 (8 bytes for 64-bit system)
-    printf("%d\n", sizeof(a));      // 12 (size of struct A = 12 bytes)
+	printf("%lu\n", sizeof(&a));     // 8 (8 bytes for 64-bit system)
+    printf("%lu\n", sizeof(a));      // 12 (size of struct A = 12 bytes)
 	printf("%p\n", &a);             // 000000000022FE14
     printf("%p\n", &a.x);           // 000000000022FE14
     printf("%p\n", &a.y);           // 000000000022FE18
@@ -168,9 +168,9 @@ void sizeof_struct_test1(){
     // what is *ptr, *(&ptr), ptr
     struct A *ptr;
     ptr = &a; 
-	printf("%d\n", sizeof(ptr));    // 8 (8 bytes for 64-bit system)
-    printf("%d\n", sizeof(&ptr));   // 8 (8 bytes for 64-bit system) 
-    printf("%d\n", sizeof(*ptr));   // 12 (size of struct A = 12 bytes)
+	printf("%lu\n", sizeof(ptr));    // 8 (8 bytes for 64-bit system)
+    printf("%lu\n", sizeof(&ptr));   // 8 (8 bytes for 64-bit system) 
+    printf("%lu\n", sizeof(*ptr));   // 12 (size of struct A = 12 bytes)
 	printf("%p\n", ptr);            // 000000000022FE14
     printf("%p\n", &ptr->x);        // 000000000022FE14
     printf("%p\n", &ptr->y);        // 000000000022FE18
@@ -186,7 +186,7 @@ void sizeof_struct_test1(){
 	//		spec: sizeof operator shall not be applied to function type or an incomplete type
 	// if operand is b, ok to compile -> 8 (bytes)
 	// if operand is &b, ok to compile -> 8 (bytes)
-	printf("%d\n", sizeof(&b));		// 8
+	printf("%lu\n", sizeof(&b));		// 8
 }
 
 struct test {
@@ -199,7 +199,7 @@ void sizeof_struct_test2(){
     struct test t;
     // int 4 bytes, char 1 byte, float 4 bytes -> 14 bytes
     // output is 16 byte due to structure padding, data is aligned as 4 bytes package
-    printf("%d\n", sizeof(t));  // 16 (bytes)
+    printf("%lu\n", sizeof(t));  // 16 (bytes)
     printf("%p\n", &t.a);       // 000000000022FE10
     printf("%p\n", &t.b);       // 000000000022FE14
     printf("%p\n", &t.c);       // 000000000022FE18
@@ -208,12 +208,12 @@ void sizeof_struct_test2(){
 }
 
 // test structure
-struct Rectangular {
+struct Rectangule {
 	unsigned int length, width;
 }; 	// structure ends with ";"
 
 void struct_test(){
-	struct Rectangular rect[2];	// a structure array of 2 elements
+	struct Rectangule rect[2];	// a structure array of 2 elements
 	int i;
 
 	rect[0].length = 10;
@@ -228,8 +228,9 @@ void struct_test(){
 	}
 }
 
+// MyStruct defined in header
 void typedef_struct_test(){
-    MyStruct ms;
+    MS ms;
 
     ms.i = 1; ms.j = 2, ms.k = 3;
     printf("%d\n", ms.i);
@@ -244,10 +245,10 @@ void declaration_definition_test(){
     // define i
     int i; 
     printf("%p\n", &i);             // 000000000022FE1C
-    printf("%llu\n", sizeof(i));    // 4
+    printf("%lu\n", sizeof(i));    // 4
 
     printf("%p\n", &j);             // 000000000040502C
-    printf("%llu\n", sizeof(j));    // 4
+    printf("%lu\n", sizeof(j));    // 4
     printf("%d\n", j);              // 10, defined in static_extern.c
 }
 
@@ -262,7 +263,7 @@ union Data {
 // due to 4-byte alignment, 2 byte is padded so total is 6 + 2 = 8 bytes
 void sizeof_union_test(){
     union Data data;
-    printf("%d\n", sizeof(data));   // 8 (bytes)
+    printf("%lu\n", sizeof(data));   // 8 (bytes)
 }
 
 // only one union member can contain a value at any given time

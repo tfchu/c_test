@@ -4,7 +4,16 @@ typedef struct MyStruct{
     int i;
     int j;
     int k;
-} MyStruct;
+} MS;
+
+/* or
+
+struct MyStruct{
+    int i, j, k;
+}; 
+typedef struct MyStruct MS;
+
+*/
 
 #ifndef FALSE
     #define FALSE 0
@@ -13,3 +22,5 @@ typedef struct MyStruct{
 #ifndef TRUE
     #define TRUE 1
 #endif
+
+void typedef_struct_test();
