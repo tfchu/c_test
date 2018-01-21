@@ -239,7 +239,8 @@ void typedef_struct_test(){
 }
 
 
-extern int j;   // declared but not defined, telling compiler that it will be found at link time
+extern int j;   // declared but not defined, telling compiler that it will be found at "link time"
+                // j is defined in static_extern.c. if this is not compiled together, link error occurs. 
 
 void declaration_definition_test(){
     // define i
