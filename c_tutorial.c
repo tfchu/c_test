@@ -228,7 +228,7 @@ void struct_test(){
 	}
 }
 
-// MyStruct defined in header
+// MyStruct defined in header c_tutorial.h
 void typedef_struct_test(){
     MS ms;
 
