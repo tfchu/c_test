@@ -8,3 +8,7 @@ struct rect_tag
 typedef struct rect_tag rect_t;
 
 rect_t intersection(rect_t r1, rect_t r2); 
+
+void swap(int *xp, int *yp);
+
+int sfact(int x);

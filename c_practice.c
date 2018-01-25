@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "c_practice.h"
 
+// Example: find intersection of two rectangles
 float min(float f1, float f2)
 {
     // compare f1 to f2
@@ -46,4 +47,44 @@ rect_t intersection(rect_t r1, rect_t r2)
     ans.top = min(r1.top, r2.top);
     // The rectangle called ans is your answer
     return ans;
+}
+
+// Example: swap two values
+int zip1 = 15213;
+int zip2 = 98195;
+
+void call_swap()
+{
+    swap(&zip1, &zip2);
+    printf("zip1=%d, zip2=%d\n", zip1, zip2);
+}
+
+void swap(int *xp, int *yp)
+{
+    int t0 = *xp;
+    int t1 = *yp;
+    *xp = t1;
+    *yp = t0;
+}
+
+// Example: factorial fucntion
+// sfact(5) = 5 x 4 x 3 x 2 x 1
+void s_helper(int x, int *accum)
+{
+    if (x < 1)
+        return;
+    else
+    {
+        int z = *accum * x;
+        printf("%d = %d x %d\n", z, *accum, x);
+        *accum = z;
+        s_helper(x - 1, accum);
+    }
+}
+
+int sfact(int x)
+{
+    int val = 1;
+    s_helper(x, &val);
+    return val;
 }
