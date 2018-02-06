@@ -88,3 +88,16 @@ int sfact(int x)
     s_helper(x, &val);
     return val;
 }
+
+// Example: is N a prime number
+bool isPrimeNumber(int n){
+    if (n <= 1) {
+        return FALSE;
+    }
+    for (int i = 2; i < n; i++) {
+        if (n % i == 0) {
+            return FALSE;
+        }
+    }
+    return TRUE;
+}
