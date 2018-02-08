@@ -67,7 +67,7 @@ void run_pointer_test2(){
 }
 
 // relationship between array and pointer
-void array_test(){
+void simple_array(){
 	int arr[5] = {5, 4, 3, 2, 1};	// or arr[0] = 5, arr[1] = 4, ... 
 	int *ptr;
 	int i;
@@ -108,7 +108,7 @@ void array_test(){
  * 2. ptr = &str: a pointer ptr to pointer &str
  * 		addresses of ptr and &str are different
  */
-void string_test(){
+void simple_string(){
     // same as char *str = "Hello World";
 	char *ptr;
 	char str[] = "Hello World";
@@ -141,6 +141,57 @@ void sizeof_test(){
     printf("%lu\n", strlen(str));    // 11 (chars), str is 11 characters withtout "\0"
 }
 
+// simple structure
+struct Rectangle {
+	unsigned int length, width;
+}; 	// structure ends with ";"
+
+void simple_struct(){
+    // struct declaration and initialization
+    struct Rectangle r = {1, 5};                        // initialized according to the order of memebers 
+    printf("r's length = %ud, width = %ud", r.length, r.width);
+
+    // struct declaration and designated initialization
+    struct Rectangle r2 = {.width = 5, .length = 1};    // initialized by member name
+    printf("r2's length = %ud, width = %ud", r.length, r.width);
+
+    // struct array
+	struct Rectangle arr[2];	// a structure array of 2 elements
+	int i;
+
+	arr[0].length = 10;
+	arr[0].width = 5;
+	arr[1].length = 3;
+	arr[1].width = 2;
+
+	for (i = 0; i < 2; i++){
+		printf("rect%d:\n", i);
+		printf("  length = %u\n", rect[i].length);
+		printf("  width = %u\n", rect[i].width);
+	}
+}
+
+/*
+ | 4 | 4 | 1 | 1 | 2 | 4 | bytes, total 16 bytes
+ | a | b | c | d | p | e | variables, "p" for padding
+*/
+struct s {
+    int a; int b; char c; char d; float e;
+}; 
+
+void struct_padding(){
+    struct s my_struct;
+    // int 4 bytes, char 1 byte, float 4 bytes -> 14 bytes
+    // output is 16 byte due to structure padding, data is aligned as 4 bytes package
+    printf("%I64u\n", sizeof(my_struct));  // 16 (bytes)
+    printf("%p\n", &my_struct);         // 000000000022FE10
+    printf("%p\n", &my_struct.a);       // 000000000022FE10
+    printf("%p\n", &my_struct.b);       // 000000000022FE14
+    printf("%p\n", &my_struct.c);       // 000000000022FE18
+    printf("%p\n", &my_struct.d);       // 000000000022FE19, pad 2 empty bytes FE1A, FE1B
+    printf("%p\n", &my_struct.e);       // 000000000022FE1C
+}
+
 /*
  * sizeof operator
  */
@@ -150,7 +201,7 @@ struct A{
 
 struct B;	// forward declaration (no definition)
 
-void sizeof_struct_test1(){
+void struct_pointer(){
 	printf("%lu\n", sizeof(struct A));   // 12 (3 int, 4 bytes each)
 
 	// declaration
@@ -166,18 +217,17 @@ void sizeof_struct_test1(){
     printf("%d\n", *(&a));          // 2293232 or 0x22FDF0, same for *(&a+1), *(&a+2). what is this? 
 
     // what is *ptr, *(&ptr), ptr
-    struct A *ptr;
-    ptr = &a; 
-	printf("%lu\n", sizeof(ptr));    // 8 (8 bytes for 64-bit system)
-    printf("%lu\n", sizeof(&ptr));   // 8 (8 bytes for 64-bit system) 
-    printf("%lu\n", sizeof(*ptr));   // 12 (size of struct A = 12 bytes)
-	printf("%p\n", ptr);            // 000000000022FE14
-    printf("%p\n", &ptr->x);        // 000000000022FE14
-    printf("%p\n", &ptr->y);        // 000000000022FE18
-    printf("%p\n", &ptr->z);        // 000000000022FE1C
-    printf("%p\n", &ptr);           // 000000000022FE08, address of the struct A
-    printf("%d\n", *ptr);           // 2293232 or 0x22FDF0, same for *(ptr+1), *(ptr+2). what is this? 
-    printf("%d\n", ptr->x);         // 3
+    struct A *a_ptr;
+    a_ptr = &a; 
+	printf("%lu\n", sizeof(a_ptr));    // 8 (8 bytes for 64-bit system)
+    printf("%lu\n", sizeof(*a_ptr));   // 12 (size of struct A = 12 bytes)
+	printf("%p\n", a_ptr);            // 000000000022FE14
+    printf("%p\n", &a_ptr->x);        // 000000000022FE14
+    printf("%p\n", &a_ptr->y);        // 000000000022FE18
+    printf("%p\n", &a_ptr->z);        // 000000000022FE1C
+    printf("%p\n", &a_ptr);           // 000000000022FE08, address of the struct A? 
+    printf("%d\n", *a_ptr);           // 2293232 or 0x22FDF0, same for *(ptr+1), *(ptr+2). what is this? 
+    printf("%d\n", a_ptr->x);         // get value of x, 3
 
 	struct B *b;
 	// if operand is 'struct B', compiler error
@@ -189,47 +239,8 @@ void sizeof_struct_test1(){
 	printf("%lu\n", sizeof(&b));		// 8
 }
 
-struct test {
-    int a; int b;
-    char c; char d;
-    float e;
-}; 
-
-void sizeof_struct_test2(){
-    struct test t;
-    // int 4 bytes, char 1 byte, float 4 bytes -> 14 bytes
-    // output is 16 byte due to structure padding, data is aligned as 4 bytes package
-    printf("%lu\n", sizeof(t));  // 16 (bytes)
-    printf("%p\n", &t.a);       // 000000000022FE10
-    printf("%p\n", &t.b);       // 000000000022FE14
-    printf("%p\n", &t.c);       // 000000000022FE18
-    printf("%p\n", &t.d);       // 000000000022FE19, pad 2 empty bytes FE1A, FE1B
-    printf("%p\n", &t.e);       // 000000000022FE1C
-}
-
-// test structure
-struct Rectangule {
-	unsigned int length, width;
-}; 	// structure ends with ";"
-
-void struct_test(){
-	struct Rectangule rect[2];	// a structure array of 2 elements
-	int i;
-
-	rect[0].length = 10;
-	rect[0].width = 5;
-	rect[1].length = 3;
-	rect[1].width = 2;
-
-	for (i = 0; i < 2; i++){
-		printf("rect%d:\n", i);
-		printf("  length = %u\n", rect[i].length);
-		printf("  width = %u\n", rect[i].width);
-	}
-}
-
 // MyStruct defined in header c_tutorial.h
-void typedef_struct_test(){
+void typedef_struct(){
     MS ms;
 
     ms.i = 1; ms.j = 2, ms.k = 3;
@@ -238,11 +249,43 @@ void typedef_struct_test(){
     printf("%d\n", ms.k);
 }
 
+/*
+ simple union
+*/
+union Data {
+    int i;
+    float f;
+    char str[6];
+};
 
+// only one union member can contain a value at any given time
+// max size is allocated. in this case 6 char or 6 bytes
+// due to 4-byte alignment, 2 byte is padded so total is 6 + 2 = 8 bytes
+void sizeof_union(){
+    union Data data;
+    printf("%lu\n", sizeof(data));   // 8 (bytes)
+}
+
+// only one union member can contain a value at any given time
+// when a new member is defined, previously defined members are corrupted
+void simple_union(){
+    union Data data;
+    data.i = 2;
+    data.f = 2.5;
+    strcpy(data.str, "Hi");
+
+    printf("%d\n", data.i);     // 1073768776 (corrupted, no longer 2)
+    printf("%f\n", data.f);     // 2.006426 (corrupted, no longer 2.5)
+    printf("%s\n", data.str);   // Hi (correct)
+}
+
+/*
+ declaration vs definition
+*/
 extern int j;   // declared but not defined, telling compiler that it will be found at "link time"
                 // j is defined in static_extern.c. if this is not compiled together, link error occurs. 
 
-void declaration_definition_test(){
+void declaration_definition(){
     // define i
     int i; 
     printf("%p\n", &i);             // 000000000022FE1C
@@ -253,29 +296,3 @@ void declaration_definition_test(){
     printf("%d\n", j);              // 10, defined in static_extern.c
 }
 
-union Data {
-    int i;
-    float f;
-    char str[6];
-};
-
-// only one union member can contain a value at any given time
-// max size is allocated. in this case 6 char or 6 bytes
-// due to 4-byte alignment, 2 byte is padded so total is 6 + 2 = 8 bytes
-void sizeof_union_test(){
-    union Data data;
-    printf("%lu\n", sizeof(data));   // 8 (bytes)
-}
-
-// only one union member can contain a value at any given time
-// when a new member is defined, previously defined members are corrupted
-void union_test(){
-    union Data data;
-    data.i = 2;
-    data.f = 2.5;
-    strcpy(data.str, "Hi");
-
-    printf("%d\n", data.i);     // 1073768776 (corrupted, no longer 2)
-    printf("%f\n", data.f);     // 2.006426 (corrupted, no longer 2.5)
-    printf("%s\n", data.str);   // Hi (correct)
-}

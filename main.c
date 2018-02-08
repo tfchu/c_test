@@ -31,11 +31,13 @@ int main(){
 
 	//sfact(5);
 
-	int N = 29393;
-	if(isPrimeNumber(29393)){
-		printf("%d is a prime number\n", N);
-	} else {
-		printf("%d is NOT a prime number\n", N);
-	}
-	return 0;
+	// int N = 29393;
+	// if(isPrimeNumber(29393)){
+	// 	printf("%d is a prime number\n", N);
+	// } else {
+	// 	printf("%d is NOT a prime number\n", N);
+	// }
+	// return 0;
+
+	simple_struct();
 }
