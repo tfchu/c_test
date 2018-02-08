@@ -149,11 +149,11 @@ struct Rectangle {
 void simple_struct(){
     // struct declaration and initialization
     struct Rectangle r = {1, 5};                        // initialized according to the order of memebers 
-    printf("r's length = %ud, width = %ud", r.length, r.width);
+    printf("r's length = %u, width = %u\n", r.length, r.width);
 
     // struct declaration and designated initialization
     struct Rectangle r2 = {.width = 5, .length = 1};    // initialized by member name
-    printf("r2's length = %ud, width = %ud", r.length, r.width);
+    printf("r2's length = %u, width = %u\n", r2.length, r2.width);
 
     // struct array
 	struct Rectangle arr[2];	// a structure array of 2 elements
@@ -166,8 +166,8 @@ void simple_struct(){
 
 	for (i = 0; i < 2; i++){
 		printf("rect%d:\n", i);
-		printf("  length = %u\n", rect[i].length);
-		printf("  width = %u\n", rect[i].width);
+		printf("  length = %u\n", arr[i].length);
+		printf("  width = %u\n", arr[i].width);
 	}
 }
 
@@ -183,7 +183,7 @@ void struct_padding(){
     struct s my_struct;
     // int 4 bytes, char 1 byte, float 4 bytes -> 14 bytes
     // output is 16 byte due to structure padding, data is aligned as 4 bytes package
-    printf("%I64u\n", sizeof(my_struct));  // 16 (bytes)
+    printf("%lu\n", sizeof(my_struct));  // 16 (bytes)
     printf("%p\n", &my_struct);         // 000000000022FE10
     printf("%p\n", &my_struct.a);       // 000000000022FE10
     printf("%p\n", &my_struct.b);       // 000000000022FE14
@@ -214,7 +214,7 @@ void struct_pointer(){
     printf("%p\n", &a.x);           // 000000000022FE14
     printf("%p\n", &a.y);           // 000000000022FE18
     printf("%p\n", &a.z);           // 000000000022FE1C
-    printf("%d\n", *(&a));          // 2293232 or 0x22FDF0, same for *(&a+1), *(&a+2). what is this? 
+    //printf("%d\n", *(&a));          // 2293232 or 0x22FDF0, same for *(&a+1), *(&a+2). what is this? 
 
     // what is *ptr, *(&ptr), ptr
     struct A *a_ptr;
@@ -226,7 +226,7 @@ void struct_pointer(){
     printf("%p\n", &a_ptr->y);        // 000000000022FE18
     printf("%p\n", &a_ptr->z);        // 000000000022FE1C
     printf("%p\n", &a_ptr);           // 000000000022FE08, address of the struct A? 
-    printf("%d\n", *a_ptr);           // 2293232 or 0x22FDF0, same for *(ptr+1), *(ptr+2). what is this? 
+    //printf("%d\n", *a_ptr);           // 2293232 or 0x22FDF0, same for *(ptr+1), *(ptr+2). what is this? 
     printf("%d\n", a_ptr->x);         // get value of x, 3
 
 	struct B *b;
