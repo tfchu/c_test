@@ -140,8 +140,8 @@ void simple_string()
     }
 }
 
-/*	ptr				str
- *  (char *)		(char [])
+/*	ptr             str
+ *  (char *)        (char [])
  *  ptr type: (char *), pointer to char
  *  str type: (char []), array of char
  */
