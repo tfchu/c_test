@@ -22,5 +22,6 @@ typedef char bool;
     #define TRUE 1
 #endif
 bool isPrimeNumber(int N);
+void left_shift_test();
 
 

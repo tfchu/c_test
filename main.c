@@ -4,7 +4,7 @@
  *  Created on: Jun 3, 2017
  *      Author: tfchu
  */
-#include <stdio.h>
+//#include <stdio.h>
 //#include "memtest86p.h"
 #include "c_tutorial.h"
 #include "c_practice.h"
@@ -39,5 +39,47 @@ int main(){
 	// }
 	// return 0;
 
-	simple_struct();
+	//simple_struct();
+
+	/* gpio test
+	int id, dir, src;
+	int ctrl0, ctrl1, ctrl2, oe;
+
+	id = 2;		// gpio bit 2
+	dir = 0;	// out
+	src = 1;	// ?
+
+	ctrl0 = 0xff8ff7fc;
+	ctrl1 = 0;
+	ctrl2 = 0;
+	ctrl0 = (ctrl0 & ~(1 << id)) | ((src & 1) << id);
+	ctrl1 = (ctrl1 & ~(1 << id)) | (((src & 2) >> 1) << id);
+	ctrl2 = (ctrl2 & ~(1 << id)) | (((src & 4) >> 2) << id);
+	printf("ctrl0=%x\nctrl1=%x\nctrl2=%x\n", ctrl0, ctrl1, ctrl2);
+
+	oe = 0xf16ff607;
+	oe = (oe & ~(1 << id)) | (dir << id);
+	printf("oe=%x\n", oe);
+
+	// set [id] to 1 if value = 1, set [id] to 0 if value = 0
+	int data;
+	data = 0x00617203;
+	printf("value = 1: %x\n", data | (1 << id));
+	printf("value = 0: %x\n", data & ~(1 << id));
+	*/
+
+	// c_tutorial
+	//complex_union();
+	//struct_array();
+
+	//array_cast_to_struct();
+	//function_with_macro();
+	//main_enum_to_array();
+	//pass_enum_string_to_function();
+	//left_shift_test();
+	//struct_or_structptr();
+
+	//function_pointer_test();
+	array_unknown_size(5);
+
 }

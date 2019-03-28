@@ -101,3 +101,16 @@ bool isPrimeNumber(int n){
     }
     return TRUE;
 }
+
+void left_shift_test(){
+    int addr, mask, pattern, pattern_comp;
+    addr = 0x6000000;
+    mask = 0x4;
+    pattern = 0;
+    pattern_comp = ~pattern;
+    printf("write 0x%x @ add 0x%x\n", pattern, addr);
+    for (int i = 0; i < 30; i++) {
+        printf("write 0x%x @ 0x%x\n", pattern_comp, addr | mask);
+        mask = mask << 1;
+    }
+}

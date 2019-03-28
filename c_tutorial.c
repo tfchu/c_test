@@ -1,15 +1,18 @@
 #include <stdio.h>
 #include <string.h>
 #include "c_tutorial.h"
+#include "c_struct.h"
 
-// #define is in header file (note. without ";")
+// preprocessor starts with "#". compiler replaces text or pre-processes it
+// e.g. use "#define" to define TRUE and FALSE (note. without ";") in header file
+// note. bool is a new type equal to char
 void preprocessor_test()
 {
     bool logic;
     logic = TRUE;
-    printf("True is %d\n", logic);
+    printf("True is %d\n", logic);  // 1
     logic = FALSE;
-    printf("False is %d\n", logic);
+    printf("False is %d\n", logic); // 0
 }
 
 void data_type_long_test()
@@ -109,6 +112,19 @@ void simple_array()
     {
         printf("%d\n", *(ptr + i));
     }
+}
+
+void array_unknown_size(int size)
+{
+    int *array;
+    array = malloc(size * sizeof(int));   // 5 elements
+    for(int i = 0; i < size; i++){
+        array[i] = i * 2;
+    }
+    for(int i = 0; i < size; i++) {
+        printf("%d\n", array[i]);
+    }
+    printf("sizeof: %d", sizeof(array)/sizeof(array[0]));
 }
 
 /*
@@ -310,6 +326,56 @@ void simple_union()
     printf("%s\n", data.str); // Hi (correct)
 }
 
+// struct in union, modifying struct modifies variable as "only one union member can contain a value at any given time"
+// init tu (10-bit a=1, 4-bit b=2, 18-bit c=3), bits in memory
+// | 0000 0000 0000 0000 | 1100 1000 0000 0001 | = 51201 (dec) @ 0x22FE1C
+// |                        c    b           a |
+// modify_complex_union_ptr(&tu): modify with pointer &tu
+// | 0000 0000 0000 0000 | 0100 1000 0000 0011 | = 18453 (dec) @ 0x22FE1C
+// |                        c    b           a |
+// modify_complex_union_val(tu): modify again with value tu
+// a new union is created at differnt location (original is not changed)
+// | 0000 0000 0000 0000 | 1100 1000 0000 0001 | = 51201 (dec) @ 0x22FDF0
+// |                        c    b           a |
+void complex_union()
+{
+    TEST_UNION tu;
+    printf("original address: 0x%p\n", &tu);    // 0x000000000022FE1C
+
+    tu.dw = 0;
+    printf("Original DW value: %d\n", tu.dw);   // 0
+
+    tu.bit.a = 1;   // 10-bit
+    tu.bit.b = 2;   // 4-bit
+    tu.bit.c = 3;   // 18-bit
+
+    printf("New DW value: %d\n", tu.dw);        // 51201, original
+
+    modify_complex_union_ptr(&tu);
+    printf("New DW value: %d\n", tu.dw);        // 18435, modified
+
+    modify_complex_union_val(tu);
+    printf("New DW value: %d\n", tu.dw);        // 18435, unmodified
+}
+// simulate pass-by-reference by passing the address of a variable
+inline void modify_complex_union_ptr(TEST_UNION *tu)
+{
+    tu->bit.a = 3;
+    tu->bit.b = 2;
+    tu->bit.c = 1;
+}
+
+// C language is pass-by-value without exception
+// A function is NOT able to change the actual parameters value
+// when value of "tu" is passed, a new location is created to store it, modification is made at new location
+inline void modify_complex_union_val(TEST_UNION tu)
+{
+    tu.bit.a = 1;
+    tu.bit.b = 2;
+    tu.bit.c = 3;
+    printf("new address: 0x%p\n", &tu);           // 0x000000000022FDF0
+}
+
 /*
  declaration vs definition
 */
@@ -326,4 +392,176 @@ void declaration_definition()
     printf("%p\n", &j);         // 000000000040502C
     printf("%lu\n", sizeof(j)); // 4
     printf("%d\n", j);          // 10, defined in static_extern.c
+}
+
+// volatile
+volatile int buff[192];
+
+void volatile_test() {
+    
+}
+
+// struct array
+typedef struct
+{
+    char element: 6;    // lower 6 bit of character
+    char :2;            // upper 2-bit default to 1, has no name
+} entry_t;
+
+void struct_array(){
+    entry_t arr[2][2] = {
+        {
+            {.element = '1'}, {.element = '2'}
+        }, 
+        {
+            {.element = '3'}, {.element = '4'}
+        }
+    };
+
+    /* upper 2-bit default to 1
+    ± @ 000000000022FE14, due to '1' (ascii 49) | (1 << 6 | 1 << 7) = 241 (±)
+    ≥ @ 000000000022FE15, due to '2' (ascii 50) | (1 << 6 | 1 << 7) = 242 (≥)
+    ≤ @ 000000000022FE16, due to '3' (ascii 50) | (1 << 6 | 1 << 7) = 243 (≤)
+    ⌠ @ 000000000022FE17, due to '4' (ascii 50) | (1 << 6 | 1 << 7) = 244 (⌠)
+    */
+    for (int i = 0; i < 2; i++){
+        for (int j = 0; j < 2; j++){
+            printf("%c @ %p\n", arr[i][j].element, &arr[i][j]);
+        }
+    }
+    
+}
+
+// consider endianess
+// array in memory: |01 00 00 00|02 00 00 00|03 00 00 00|04 00 00 00|05 00 00 00|06 00 00 00|...
+// struct:          | a  b  c  d|     e     |           f           | unused
+// so (byte) a=0x01, b=0x00, c=0x00, e=0x00000002, f=0x00000004_00000003
+// CAST_TO_STRUCT* cts = (CAST_TO_STRUCT *)arr; // CAST_TO_STRUCT has less bytes than arr, so cts is truncated arr
+// CAST_TO_STRUCT* cts = arr; // gets warning due to incompatible pointer type but OK
+// CAST_TO_STRUCT cts = (CAST_TO_STRUCT)arr;  // casting to CAST_TO_STRUCT is not allowed
+void array_cast_to_struct() {
+    int arr[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+    CAST_TO_STRUCT* cts = (CAST_TO_STRUCT *) arr;    // start from arr[1]: (CAST_TO_STRUCT *) &arr[1]
+    //pCAST_TO_STRUCT cts = (pCAST_TO_STRUCT)arr;   // same as above
+
+    // %02x: pad with leading 0s, total 2 digits, hex format 
+    printf("%02x %02x %02x %02x %04x %08I64x\n", cts->a, cts->b, cts->c, cts->d, cts->e, cts->f);
+
+    // output is same as above
+    CAST_TO_STRUCT_BIT* ctsb = (CAST_TO_STRUCT_BIT *)arr;
+    printf("%02x %02x %02x %02x %04x %08I64x\n", ctsb->a, ctsb->b, ctsb->c, ctsb->d, ctsb->e, ctsb->f);
+}
+
+void function_with_macro() {
+    int var = ALIGN(18, 4);
+    printf("macro function: %d\n", var);
+}
+
+// UINT8 data[] = &data; this caused compile error due to array length not specified
+// pass &data to data[] caused only compile warning (incompatible pointer type)
+// memory layout: enum element is 4 bytes and each array element is 1 byte
+// |data[0] data[1] data[2] data[3]|
+// |     enum element e.g. reg1    |
+enum reg {reg1, reg2, reg3, reg4};  // enum stored as int (4 bytes), value = 0, 1, 2, 3
+void function_enum_to_array(UINT8 data[], UINT8 len) {
+    printf("length = %d bytes\n", len);
+    for (UINT32 i = 0; i < len; i++) {
+        printf("data[%d] = 0x%x\n", i, data[i]);    // if reg3, then data[0]=0x2, data[1|2|3]=0x0
+    }
+}
+void test_enum_to_array(enum reg data) {
+    function_enum_to_array(&data, sizeof(data));    // pass address of enum element &data to array parameter UINT8 data[]
+}
+void main_enum_to_array() {
+    test_enum_to_array(reg3); 
+}
+
+// after a enum is typedef'ed, variable can be called directly, i.e. PIN1,PIN2,PIN3
+// enum name 'pins' is used to indicate type if necessary
+// regular enum variables can also be called directly
+void use_enum_string(PIN_t pin, enum reg r) {
+    // typedef'ed enum (declared in header)
+    printf("%d\n", PIN1);   // 0
+    printf("%d\n", PIN2);   // 1
+    printf("%d\n", PIN3);   // 2
+    printf("you selected typedef'ed enum %d\n", pin);   // 0
+
+    // regular enum (declared above)
+    printf("%d\n", reg1);   // 0
+    printf("%d\n", reg2);   // 1
+    printf("%d\n", reg3);   // 2
+    printf("you selected regular enum %d\n", reg1);   // 0
+}
+
+void pass_enum_string_to_function() {
+    use_enum_string(PIN1, reg1);
+}
+
+//
+NEW_STRUCT init_struct(NEW_STRUCT ns) {
+    ns.cts.a = 0;
+    ns.cts.b = 1;
+    ns.cts.c = 2;
+    ns.cts.d = 3;
+    ns.cts.e = 4;
+    ns.cts.f = 5;
+    return ns;
+}
+
+// https://stackoverflow.com/questions/12958931/warning-x-may-be-used-uninitialized-in-this-function
+NEW_STRUCT_PTR init_struct_ptr(NEW_STRUCT_PTR nsp) {
+    CAST_TO_STRUCT cts;
+    cts.a = 5;
+    cts.b = 4;
+    cts.c = 3;
+    cts.d = 2;
+    cts.e = 1;
+    cts.f = 0;
+
+    nsp.pcts = &cts;
+    return nsp;
+}
+
+void struct_or_structptr() {
+    NEW_STRUCT ns;
+    ns = init_struct(ns);
+    printf("address: 0x%p\n", &ns);
+    printf("value: %d %d %d %d %d %ld\n", ns.cts.a, ns.cts.b, ns.cts.c, ns.cts.d, ns.cts.e, ns.cts.f);
+    ns.cts.a = 5;
+    ns.cts.b = 4;
+    ns.cts.c = 3;
+    ns.cts.d = 2;
+    ns.cts.e = 1;
+    ns.cts.f = 0;
+    printf("value: %d %d %d %d %d %ld\n", ns.cts.a, ns.cts.b, ns.cts.c, ns.cts.d, ns.cts.e, ns.cts.f);
+    
+    NEW_STRUCT_PTR nsp; 
+    nsp = init_struct_ptr(nsp);
+    printf("address: 0x%p\n", &nsp);
+    printf("pointer: %d %d %d %d %d %ld\n", nsp.pcts->a, nsp.pcts->b, nsp.pcts->c, nsp.pcts->d, nsp.pcts->e, nsp.pcts->f);
+    nsp.pcts->a = 0;
+    nsp.pcts->b = 1;
+    nsp.pcts->c = 2;
+    nsp.pcts->d = 3;
+    nsp.pcts->e = 4;
+    nsp.pcts->f = 5;
+    printf("pointer: %d %d %d %d %d %ld\n", nsp.pcts->a, nsp.pcts->b, nsp.pcts->c, nsp.pcts->d, nsp.pcts->e, nsp.pcts->f);
+}
+
+// function pointer test
+// typedef a function pointer, use it to declare a new variable
+// then use the new variable like a function
+int add (int a, int b) {
+    return a + b;
+}
+
+typedef int (*add_integer)(int, int);   // function pointer (return int, 2 params of type int)
+
+void function_pointer_test() {
+    add_integer addition = add;         // add_integer is a new type (function pointer), used to declare new variable
+    int c = addition(1, 2);             // call add() via new variable
+    printf("%d\n", c);                  // 3
+    printf("address of addition: 0x%p\n", &addition);     // 0x000000000022FE10
+    printf("address of add: 0x%p\n", add);                // 0x00000000004024E0
 }
