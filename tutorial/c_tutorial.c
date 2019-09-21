@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "c_tutorial.h"
 #include "c_struct.h"
 
 // preprocessor starts with "#". compiler replaces text or pre-processes it
 // e.g. use "#define" to define TRUE and FALSE (note. without ";") in header file
+// statement between #ifdef/#endif, #ifndef/#endif is kept/removed depending on whether the variable is defined or not
 // note. bool is a new type equal to char
 void preprocessor_test()
 {
@@ -13,6 +15,13 @@ void preprocessor_test()
     printf("True is %d\n", logic);  // 1
     logic = FALSE;
     printf("False is %d\n", logic); // 0
+
+    #ifdef TRUE
+        printf("TRUE is defined");
+    #endif
+    #ifdef FALSE
+        printf("FALSE is defined");
+    #endif
 }
 
 void data_type_long_test()
@@ -75,6 +84,23 @@ void run_pointer_test2()
     printf("%d\n", *ptr); // 284
 }
 
+// pointer as function parameter
+// pointer_test3 parameter is a pointer to int, which is address of any integer type
+// passing pointer as parameter is similar to pass-by-object, 
+void pointer_test3(int *value) {
+    printf("%d @ 0x%p\n", *value, (void *)value);   // 10 @ 0x000000000022FE1C
+}
+void pointer_test3_compare(int value) {
+    printf("%d @ 0x%p\n", value, (void *)&value);
+}
+
+void run_pointer_test3() {
+    int i = 10;
+    printf("original %d @ 0x%p\n", i, (void *)&i);  // original 10 @ 0x000000000022FE1C
+    pointer_test3(&i);                              // 10 @ 0x000000000022FE1C
+    pointer_test3_compare(i);                       // 10 @ 0x000000000022FDF0
+}
+
 // relationship between array and pointer
 void simple_array()
 {
@@ -88,7 +114,7 @@ void simple_array()
     // if using arr[i], then print int 5, 4, 3, 2, 1 formatted as 8-byte like pointer
     for (i = 0; i < 5; i++)
     {
-        printf("%p\n", &arr[i]);
+        printf("%p\n", (void *)&arr[i]);
     }
     // print element values with variable arr
     for (i = 0; i < 5; i++)
@@ -96,7 +122,7 @@ void simple_array()
         printf("%d\n", arr[i]);
     } // 5 4 3 2 1
 
-    printf("array address: ptr = %p, arr = %p\n", ptr, arr); // 000000000022FDF0, 000000000022FDF0
+    printf("array address: ptr = %p, arr = %p\n", (void *)ptr, (void *)arr); // 000000000022FDF0, 000000000022FDF0
 
     // print element address with pointer
     for (i = 0; i < 5; i++)
@@ -117,7 +143,7 @@ void simple_array()
 void array_unknown_size(int size)
 {
     int *array;
-    array = malloc(size * sizeof(int));   // 5 elements
+    array = malloc(size * sizeof(int));   // size = 5 (elements)
     for(int i = 0; i < size; i++){
         array[i] = i * 2;
     }
@@ -125,6 +151,18 @@ void array_unknown_size(int size)
         printf("%d\n", array[i]);
     }
     printf("sizeof: %d", sizeof(array)/sizeof(array[0]));
+}
+
+void array_cpy()
+{
+    int src[5], dst[5];
+    for(int i = 0; i < 5; i++) {
+        src[i] = i * 3;
+    }
+    memcpy(dst, src, sizeof(dst));
+    for(int i = 0; i < 5; i++) {
+        printf("%d\n", dst[i]);
+    }
 }
 
 /*
@@ -163,12 +201,21 @@ void simple_string()
  */
 void sizeof_test()
 {
+    printf("size of int: %lu\n", sizeof(int));  // 4 (bytes) for int
+
     char *ptr;
     char str[] = "Hello World";
     ptr = str;
-    printf("%lu\n", sizeof(ptr)); // 8 (bytes) (8 bytes for 64-bit system)
-    printf("%lu\n", sizeof(str)); // 12 (bytes) (str is 11 char + "\0", so 12 characters = 12 bytes)
-    printf("%lu\n", strlen(str)); // 11 (chars), str is 11 characters withtout "\0"
+    printf("size of ptr: %lu\n", sizeof(ptr)); // 8 (bytes) (8 bytes for 64-bit system)
+    printf("size of string: %lu\n", sizeof(str)); // 12 (bytes) (str is 11 char + "\0", so 12 characters = 12 bytes)
+    printf("strlen: %lu\n", strlen(str)); // 11 (chars), str is 11 characters withtout "\0"
+
+    struct BitStruct bs;
+    // struct
+    printf("size of MS_t: %lu\n", sizeof(MS_t));    // declared in header, 12 (3 int)
+    printf("size_of bs: %lu\n", sizeof(bs));    // declared in header, 1 (1 char), 4 if using int
+    // enum
+    printf("size of enum: %lu\n", sizeof(PIN_t)); // declared in header, 4 (1 int)
 }
 
 // simple structure
@@ -285,7 +332,7 @@ void struct_pointer()
 // MyStruct defined in header c_tutorial.h
 void typedef_struct()
 {
-    MS ms;
+    MS_t ms;
 
     ms.i = 1;
     ms.j = 2, ms.k = 3;
@@ -305,7 +352,7 @@ union Data {
 
 // only one union member can contain a value at any given time
 // max size is allocated. in this case 6 char or 6 bytes
-// due to 4-byte alignment, 2 byte is padded so total is 6 + 2 = 8 bytes
+// due to 4-byte (dw) alignment, 2 byte is padded so total is 6 + 2 = 8 bytes
 void sizeof_union()
 {
     union Data data;
@@ -550,18 +597,72 @@ void struct_or_structptr() {
 }
 
 // function pointer test
+// 2 types of function pointer declaration (to be used as parameters in another function)
+//   one with typedef (in c_tutorial.h) (1st parameter of exec_func)
+//   one in function parameter (2nd parameter of exec_func)
+// call_func() passes 2 function pointers (sfunc, efunc) to exec_func() which executes the two functions
+// note. write functions first. if needed, use function pointer to pass them as parameters to another function
+void sfunc(char greeting[], char name[]) {
+    printf("%s, %s\n", greeting, name);
+}
+
+void efunc(char bye[]) {
+    printf("%s\n", bye);
+}
+
+void exec_func(start_function_t start_func, void (*end_func)(char bye[])) {
+    start_func("Hi", "Tony");
+    end_func("Good Bye");
+}
+
+void call_func() {
+    exec_func(sfunc, efunc);  // &sfunc, &efunc also ok
+}
+
+// function pointer test 2
 // typedef a function pointer, use it to declare a new variable
 // then use the new variable like a function
 int add (int a, int b) {
     return a + b;
 }
 
-typedef int (*add_integer)(int, int);   // function pointer (return int, 2 params of type int)
+typedef int (*add_integer_t)(int, int);   // function pointer/type: return int, typename add_integer, 2 params of int
 
-void function_pointer_test() {
-    add_integer addition = add;         // add_integer is a new type (function pointer), used to declare new variable
+void function_ptr_test2() {
+    add_integer_t addition = add;       // add_integer is a new type (function pointer), used to declare new variable
     int c = addition(1, 2);             // call add() via new variable
-    printf("%d\n", c);                  // 3
-    printf("address of addition: 0x%p\n", &addition);     // 0x000000000022FE10
-    printf("address of add: 0x%p\n", add);                // 0x00000000004024E0
+    printf("Result is %d\n", c);        // 3
+    printf("address of addition: 0x%p\n", (void *)&addition);   // 0x000000000022FE10
+    printf("address of add: 0x%p\n", &add);                     // 0x00000000004024E0
+}
+
+// function pointer 3
+// one struct member is function pointer type (add_integer_t)
+// c is a + b or c = exec(a, b) where exec = &add (address of add() function)
+typedef struct {
+    int a;
+    int b;
+    add_integer_t exec;
+    int c;
+} member_and_func;
+
+// assign member a&b value, and function pointer
+member_and_func *function_ptr_test2_assign(add_integer_t exec) {
+    member_and_func *mf = malloc(4 * sizeof(int));  // struct pointer requires initialization first, int 4 byte, func ptr 2 byte?
+                                                    // 4 can be even changed to any value (e.g. 1) and code still works
+    mf->a = 5;
+    mf->b = 8;
+    mf->exec = exec;
+    printf("a: 0x%p\n", (void *)&mf->a);                    // 0x0000000000717E20
+    printf("b: 0x%p\n", (void *)&mf->b);                    // 0x0000000000717E24
+    printf("add_integer: 0x%p\n", &mf->exec);               // 0x0000000000717E28 (!!) only 2 bytes
+    printf("c: 0x%p\n", (void *)&mf->c);                    // 0x0000000000717E30
+    return mf;
+}
+
+// assign exact function ptr to struct function ptr, and member c value (add(a, b))
+void function_ptr_test3() {
+    member_and_func *mf = function_ptr_test2_assign(add);
+    mf->c = mf->exec(mf->a, mf->b);
+    printf("Result is %d\n", mf->c);                        // 13
 }

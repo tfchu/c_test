@@ -78,8 +78,13 @@ int main(){
 	//pass_enum_string_to_function();
 	//left_shift_test();
 	//struct_or_structptr();
+	//run_pointer_test3();
 
 	//function_pointer_test();
-	array_unknown_size(5);
-
+	//array_unknown_size(5);
+	//function_ptr_test2();
+	//function_ptr_test3();
+	//array_cpy();
+	//sizeof_test();
+	//call_func();
 }
