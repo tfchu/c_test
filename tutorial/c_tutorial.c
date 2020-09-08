@@ -456,6 +456,10 @@ typedef struct
 } entry_t;
 
 void struct_array(){
+    printf("int size: %d\n", sizeof(int));      // 4
+    printf("char size: %d\n", sizeof(char));    // 1
+    printf("size: %d\n", sizeof(entry_t));      // if both char then 1 (Byte), if both int then 4 (Byte), if char+int then 8
+
     entry_t arr[2][2] = {
         {
             {.element = '1'}, {.element = '2'}
@@ -609,7 +613,8 @@ void sfunc(char greeting[], char name[]) {
 void efunc(char bye[]) {
     printf("%s\n", bye);
 }
-
+// typedef start_function_t only specifies a function signature that is same as sfunc()
+// any function with the same signature as sfunc() can be passed as 1st parameter, including sfunc()
 void exec_func(start_function_t start_func, void (*end_func)(char bye[])) {
     start_func("Hi", "Tony");
     end_func("Good Bye");

@@ -1,4 +1,9 @@
+/*
+compile
+gcc -g -Wall -pedantic -std=gnu99 .\practice\c_practice.c -o main
+*/
 #include <stdio.h>
+#include <stdbool.h>
 #include "c_practice.h"
 
 // Example: find intersection of two rectangles
@@ -113,4 +118,58 @@ void left_shift_test(){
         printf("write 0x%x @ 0x%x\n", pattern_comp, addr | mask);
         mask = mask << 1;
     }
+}
+
+/*
+simple task scheduler
+sContext (task context) keeps track of 2 task groups
+task group1: array of 2 functions (each entry a function pointer)
+    const Func_t *funcs;    // funcs is pointer to function pointers, with address fixed (constant)
+task group2: 1 function pointer
+    Func_t funcs;           // func is function pointer
+use sContext to run the tasks of each task group
+*/
+bool group1task1(){
+    printf("this is group 1 task 1\n");
+    return true;
+}
+bool group1task2(){
+    printf("this is group 1 task 2\n");
+    return true;
+}
+bool group2task1(){
+    printf("this is group 2 task 1\n");
+    return true;
+}
+const Func_t tasks1[2] = {group1task1, group1task2};
+const Func_t tasks2 = group2task1;
+
+static Context_t sContext;
+
+void init(){
+    sContext.taskGroup1.funcs = tasks1;
+    sContext.taskGroup2.func = tasks2;
+}
+
+void simple_scheduler() {
+    init();
+    sContext.taskGroup1.funcs[0]();
+    sContext.taskGroup1.funcs[1]();
+    sContext.taskGroup2.func();
+}
+
+// test i-- and --i
+// i--: 3, 2, 1, 0 (compare then subtract 1)
+// --i: 3, 2, 1 (subtract 1 then compare)
+void decrement() {
+    int i = 4;
+    while (--i > 0) {
+        printf("i: %d\n", i);
+    }
+}
+
+int main(){
+    //simple_scheduler();
+    decrement();
+    return 0;
 }

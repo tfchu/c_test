@@ -1,13 +1,12 @@
 /*
  * main.c
- *
+ * gcc -g -Wall -pedantic -std=gnu99 main.c c_tutorial.c c_struct.c static_extern.c -o main
  *  Created on: Jun 3, 2017
  *      Author: tfchu
  */
 //#include <stdio.h>
 //#include "memtest86p.h"
 #include "c_tutorial.h"
-#include "c_practice.h"
 
 int main(){
 	//printf("%lu", rand(0));
@@ -70,7 +69,7 @@ int main(){
 
 	// c_tutorial
 	//complex_union();
-	//struct_array();
+	struct_array();
 
 	//array_cast_to_struct();
 	//function_with_macro();
@@ -87,4 +86,6 @@ int main(){
 	//array_cpy();
 	//sizeof_test();
 	//call_func();
+
+	return 0;
 }

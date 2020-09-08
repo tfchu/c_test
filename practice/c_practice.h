@@ -13,7 +13,7 @@ void swap(int *xp, int *yp);
 
 int sfact(int x);
 
-typedef char bool;
+//typedef char bool;
 #ifndef FALSE
     #define FALSE 0
 #endif
@@ -24,4 +24,18 @@ typedef char bool;
 bool isPrimeNumber(int N);
 void left_shift_test();
 
+// simple task scheduler
+typedef bool (*Func_t)();
 
+typedef struct TaskGroup1_t {
+    const Func_t *funcs;
+} TaskGroup1_t;
+
+typedef struct TaskGroup2_t {
+    Func_t func;
+} TaskGroup2_t;
+
+typedef struct Context_t {
+    TaskGroup1_t taskGroup1;
+    TaskGroup2_t taskGroup2;
+} Context_t;
