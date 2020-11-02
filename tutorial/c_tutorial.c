@@ -143,9 +143,12 @@ void simple_array()
 void array_unknown_size(int size)
 {
     int *array;
-    array = malloc(size * sizeof(int));   // size = 5 (elements)
+    array = malloc(size * sizeof(int));   // size = 5 (elements), malloc() return (void *)
     for(int i = 0; i < size; i++){
         array[i] = i * 2;
+    }
+    for(int i = 0; i < size; i++) {
+        printf("%p\n", &array[i]);           // 0x0000000000AB1400, AB1404, AB1408, AB140C, AB1410 (must have &)
     }
     for(int i = 0; i < size; i++) {
         printf("%d\n", array[i]);
@@ -670,4 +673,48 @@ void function_ptr_test3() {
     member_and_func *mf = function_ptr_test2_assign(add);
     mf->c = mf->exec(mf->a, mf->b);
     printf("Result is %d\n", mf->c);                        // 13
+}
+
+// void*
+//  - a "generic" pointer type
+//  - can be converted to any other pointer type without an explicit cast
+//  - cannot dereference
+//  - cannot do pointer arithmetic
+// a pointer to any type
+void void_test()
+{
+    int a = 1; 
+    float b = 1.1;
+    void *p;
+    p = &a;
+    printf("%d\n", *((int *)p));    // 1
+    p = &b;
+    printf("%f\n", *((float *)p));  // 1.10000
+}
+
+// void **
+//  - a pointer to a pointer to memory with an unspecified type
+//  - can only dereference it once (since you can't dereference a void *)
+//  - the same way as you would with int *
+// arry with elements of different types
+void void_test2()
+{
+    void **arr;
+    int arrLen = 3;
+    arr = (void**)malloc(arrLen * sizeof(void*));
+    int a = 1;
+    float b = 1.1;
+    char c = 65;
+    arr[0] = (void*)&a;
+    arr[1] = (void*)&b;
+    arr[2] = (void*)&c;
+    printf("0x%p\n", &a);               // 0x000000000061FDDC
+    printf("0x%p\n", &b);               // 0x000000000061FDD8
+    printf("0x%p\n", &c);               // 0x000000000061FDD7
+    printf("0x%p\n", arr[0]);           // 0x000000000061FDDC
+    printf("0x%p\n", arr[1]);           // 0x000000000061FDD8
+    printf("0x%p\n", arr[2]);           // 0x000000000061FDD7
+    printf("%d\n", *((int *)arr[0]));   // 1
+    printf("%f\n", *((float *)arr[1])); // 1.10000
+    printf("%c\n", *((char *)arr[2]));  // A
 }

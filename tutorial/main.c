@@ -69,7 +69,7 @@ int main(){
 
 	// c_tutorial
 	//complex_union();
-	struct_array();
+	//struct_array();
 
 	//array_cast_to_struct();
 	//function_with_macro();
@@ -80,12 +80,14 @@ int main(){
 	//run_pointer_test3();
 
 	//function_pointer_test();
-	//array_unknown_size(5);
+	// array_unknown_size(5);
 	//function_ptr_test2();
 	//function_ptr_test3();
 	//array_cpy();
 	//sizeof_test();
 	//call_func();
+	// void_test();
+	void_test2();
 
 	return 0;
 }
