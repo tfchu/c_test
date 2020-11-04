@@ -168,6 +168,17 @@ void array_cpy()
     }
 }
 
+void ptr_to_array()
+{
+    int *p;
+    int arr[5];
+    p = arr;
+    p[0] = 1;
+    p[1] = 2;
+    printf("%d\n", p[0]);
+    printf("%d\n", p[1]);
+}
+
 /*
  * string is an array of char. end char is "\0"
  * 1. for &: if operand is [] type, & is not evaluated
@@ -676,7 +687,7 @@ void function_ptr_test3() {
 }
 
 // void*
-//  - a "generic" pointer type
+//  - a "generic" pointer type (pointer to unknown type)
 //  - can be converted to any other pointer type without an explicit cast
 //  - cannot dereference
 //  - cannot do pointer arithmetic

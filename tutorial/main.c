@@ -70,7 +70,7 @@ int main(){
 	// c_tutorial
 	//complex_union();
 	//struct_array();
-
+	ptr_to_array();
 	//array_cast_to_struct();
 	//function_with_macro();
 	//main_enum_to_array();
@@ -87,7 +87,7 @@ int main(){
 	//sizeof_test();
 	//call_func();
 	// void_test();
-	void_test2();
+	// void_test2();
 
 	return 0;
 }
