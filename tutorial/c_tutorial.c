@@ -38,9 +38,23 @@ void pointer_test()
 {
     char *ptr; // type char 1 bytes
     char str[] = "Hello World";
+
     ptr = str;                                           // or &str
     printf("str is @%p\n", str);                         //000000000022FE04
+    printf("&str is @%p\n", &str);                         //000000000022FE04
+    printf("ptr is @%p\n", ptr);
+    printf("&ptr is @%p\n", &ptr);
     printf("pointer arithmetic: %p %p\n", ptr, ptr + 1); //000000000022FE04 000000000022FE05 (+1 is 1 byte)
+    int size = sizeof(str)/sizeof(str[0]);              // 12
+    // print whole string with pointer
+    for (int i=0; i<size; i++){
+        printf("letter %d: %c\n", i, *(ptr+i));
+    }
+    // print whole string with array notation
+    for (int i=0; i<size; i++){
+        printf("%c", ptr[i]);
+    }
+    printf("\n");
 
     int *p; // type int 4 bytes
     int arr[5] = {5, 4, 3, 2, 1};
@@ -99,6 +113,30 @@ void run_pointer_test3() {
     printf("original %d @ 0x%p\n", i, (void *)&i);  // original 10 @ 0x000000000022FE1C
     pointer_test3(&i);                              // 10 @ 0x000000000022FE1C
     pointer_test3_compare(i);                       // 10 @ 0x000000000022FDF0
+}
+
+void pointer_test4(void **p)
+{
+    printf("p: 0x%p\n", p);     // 0x000000000061FDE0
+    printf("*p: 0x%p\n", *p);   // 0x000000000061FDEC
+
+    // *p: pointer to generic type (void *)
+    // (int *)(*p): cast pointer to generic type, to pointer to integer
+    // *((int *)(*p)): value of pointer (of integer type)
+    printf("%d\n", *((int *)(*p)));     // 5
+    // *intptr: pointer to integer, with value same as
+    int *intptr = *p;           // or intptr = *p;
+    printf("%d\n", *intptr);            // 5
+}
+
+void run_pointer_test4()
+{
+    int a = 5;
+    int *ptr;
+    ptr = &a;
+    printf("&a: 0x%p\n", &a);       // 0x000000000061FDEC
+    printf("&ptr: 0x%p\n", &ptr);   // 0x000000000061FDE0
+    pointer_test4(&ptr);
 }
 
 // relationship between array and pointer
@@ -707,7 +745,7 @@ void void_test()
 //  - a pointer to a pointer to memory with an unspecified type
 //  - can only dereference it once (since you can't dereference a void *)
 //  - the same way as you would with int *
-// arry with elements of different types
+// array with elements of different types
 void void_test2()
 {
     void **arr;
